@@ -4,7 +4,7 @@ import { LOCALSTORAGE_TOKEN } from './constant';
 
 
 const token = localStorage.getItem(LOCALSTORAGE_TOKEN);
-export const isLoggedInVar = makeVar(false);
+export const isLoggedInVar = makeVar(Boolean(token));
 export const authTokenVar = makeVar(token);
 
 const httpLink = createHttpLink({
