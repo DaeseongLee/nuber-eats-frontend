@@ -6,6 +6,8 @@ import { loginMutation, loginMutationVariables } from "../__generated__/loginMut
 import nuberLogo from '../images/logo.svg';
 import { Button } from "../components/button";
 import { Link } from "react-router-dom";
+import Helmet from "react-helmet";
+import { isLoggedInVar } from "../apollo";
 
 const LOGIN_MUTATION = gql`
     mutation loginMutation($loginInput: LoginInput!) {
@@ -29,10 +31,11 @@ export const Login = () => {
     });
     const onCompleted = (data: loginMutation) => {
         const {
-            login: { error, ok, token },
+            login: { ok, token },
         } = data;
         if (ok) {
             console.log(token);
+            isLoggedInVar(true);
         }
     };
     const [loginMutation, { data: loginMutationResult, loading }] = useMutation<loginMutation, loginMutationVariables>(LOGIN_MUTATION, {
@@ -55,8 +58,11 @@ export const Login = () => {
 
     return (
         <div className="h-screen flex items-center flex-col mt-10 lg:mt-28">
+            <Helmet>
+                <title>login | Nuber Eats</title>
+            </Helmet>
             <div className="w-full max-w-screen-sm flex flex-col px-5 items-center">
-                <img src={nuberLogo} className="w-52 mb-10" />
+                <img src={nuberLogo} className="w-52 mb-10" alt="logo" />
                 <h4 className="w-full font-medium text-left text-3xl mb-5">
                     Welcome back
                 </h4>
@@ -64,7 +70,8 @@ export const Login = () => {
                     className="grid gap-3 mt-5 w-full mb-5">
                     <input
                         {...register("email", {
-                            required: "Email is required"
+                            required: "Email is required",
+                            pattern: /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                         })}
                         type="email"
                         name="email"
@@ -74,6 +81,9 @@ export const Login = () => {
                     />
                     {errors.email?.message && (
                         <FormError errorMessage={errors.email?.message} />
+                    )}
+                    {errors.email?.type === "pattern" && (
+                        <FormError errorMessage={"Please enter a valid email"} />
                     )}
                     <input
                         {...register("password", {
