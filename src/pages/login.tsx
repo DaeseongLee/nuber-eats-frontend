@@ -6,8 +6,9 @@ import { loginMutation, loginMutationVariables } from "../__generated__/loginMut
 import nuberLogo from '../images/logo.svg';
 import { Button } from "../components/button";
 import { Link } from "react-router-dom";
-import Helmet from "react-helmet";
-import { isLoggedInVar } from "../apollo";
+import { Helmet } from "react-helmet-async";
+import { authTokenVar, isLoggedInVar } from "../apollo";
+import { LOCALSTORAGE_TOKEN } from "../constant";
 
 const LOGIN_MUTATION = gql`
     mutation loginMutation($loginInput: LoginInput!) {
@@ -33,8 +34,9 @@ export const Login = () => {
         const {
             login: { ok, token },
         } = data;
-        if (ok) {
-            console.log(token);
+        if (ok && token) {
+            localStorage.setItem(LOCALSTORAGE_TOKEN, token);
+            authTokenVar(token);
             isLoggedInVar(true);
         }
     };
@@ -62,7 +64,7 @@ export const Login = () => {
                 <title>login | Nuber Eats</title>
             </Helmet>
             <div className="w-full max-w-screen-sm flex flex-col px-5 items-center">
-                <img src={nuberLogo} className="w-52 mb-10" alt="logo" />
+                <img src={nuberLogo} className="w-52 mb-10" alt="Nuber Eats" />
                 <h4 className="w-full font-medium text-left text-3xl mb-5">
                     Welcome back
                 </h4>
@@ -71,7 +73,7 @@ export const Login = () => {
                     <input
                         {...register("email", {
                             required: "Email is required",
-                            pattern: /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                            pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                         })}
                         type="email"
                         name="email"
