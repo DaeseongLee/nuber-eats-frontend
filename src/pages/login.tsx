@@ -6,8 +6,8 @@ import { loginMutation, loginMutationVariables } from "../__generated__/loginMut
 
 
 const LOGIN_MUTATION = gql`
-    mutation loginMutation($email: String, $password: String!) {
-        login(input: {email:$email, password: $password}){
+    mutation loginMutation($loginInput: LoginInput!) {
+        login(input: $loginInput){
             ok
             token
             error
@@ -18,20 +18,35 @@ const LOGIN_MUTATION = gql`
 interface ILoginForm {
     email: string;
     password: string;
+    resultError?: string;
 }
 
 export const Login = () => {
     const { register, getValues, formState: { errors }, handleSubmit } = useForm<ILoginForm>();
-    const [loginMutation, { data }] = useMutation<loginMutation, loginMutationVariables>(LOGIN_MUTATION);
+    const onCompleted = (data: loginMutation) => {
+        const {
+            login: { error, ok, token },
+        } = data;
+        if (ok) {
+            console.log(token);
+        }
+    };
+    const [loginMutation, { data: loginMutationResult, loading }] = useMutation<loginMutation, loginMutationVariables>(LOGIN_MUTATION, {
+        onCompleted,
+    });
 
     const onSubmit = () => {
-        const { email, password } = getValues();
-        loginMutation({
-            variables: {
-                email,
-                password
-            },
-        })
+        if (!loading) {
+            const { email, password } = getValues();
+            loginMutation({
+                variables: {
+                    loginInput: {
+                        email,
+                        password
+                    }
+                },
+            })
+        }
     }
 
     return (
@@ -70,8 +85,11 @@ export const Login = () => {
                         <FormError errorMessage='Passwrod must be more than 10 chars' />
                     )}
                     <button className="mt-3 btn">
-                        Log In
+                        {loading ? "Loading..." : "Log In"}
                     </button>
+                    {loginMutationResult?.login.error && (
+                        <FormError errorMessage={loginMutationResult.login.error} />
+                    )}
                 </form>
             </div>
         </div>
