@@ -1,6 +1,6 @@
 module.exports = {
     client: {
-        inCludes: ["./src/**/*.tsx"],
+        inCludes: ["./src/**/*.{tsx,ts}"],
         tagName: 'gql',
         service: {
             name: "nuber-eats-backend",
