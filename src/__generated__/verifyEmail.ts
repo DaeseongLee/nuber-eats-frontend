@@ -6,7 +6,7 @@
 import { VerifyEmailInput } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: verfyEmail
+// GraphQL mutation operation: verifyEmail
 // ====================================================
 
 export interface verifyEmail_verifyEmail {

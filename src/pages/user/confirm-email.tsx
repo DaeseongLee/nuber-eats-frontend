@@ -1,8 +1,9 @@
 import { gql, useApolloClient, useMutation } from "@apollo/client"
 import { useEffect } from "react";
+import { useHistory } from "react-router";
 import { useMe } from "../../hooks/useMe";
 import { VerifyEmailInput } from "../../__generated__/globalTypes";
-import { verifyEmail, verifyEmailVariables } from "../../__generated__/verfyEmail"
+import { verifyEmail, verifyEmailVariables } from "../../__generated__/verifyEmail"
 
 const VERIFY_EMAIL_MUTATION = gql`
     mutation verifyEmail($input: VerifyEmailInput!) {
@@ -16,7 +17,7 @@ const VERIFY_EMAIL_MUTATION = gql`
 export const ConfirmEmail = () => {
     const { data: userData } = useMe();
     const client = useApolloClient();
-    console.log('apolloClient', client);
+    const history = useHistory();
     const onCompleted = (data: verifyEmail) => {
         const {
             verifyEmail: { ok },
@@ -33,23 +34,23 @@ export const ConfirmEmail = () => {
                     verified: true,
                 },
             });
+            history.push("/");
         }
     };
-
-
     const [verifyEmail] = useMutation<verifyEmail, verifyEmailVariables>(VERIFY_EMAIL_MUTATION, {
         onCompleted,
     });
 
     useEffect(() => {
         const [_, code] = window.location.href.split("code=");
-        // verifyEmail({
-        //     variables: {
-        //         input: {
-        //             code,
-        //         }
-        //     }
-        // });
+        console.log('code...', code);
+        verifyEmail({
+            variables: {
+                input: {
+                    code,
+                }
+            }
+        });
     }, []);
     return (
         <div className="mt-52 flex flex-col items-center justify-center">
