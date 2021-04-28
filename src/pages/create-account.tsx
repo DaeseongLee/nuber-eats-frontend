@@ -83,9 +83,7 @@ export const CreateAccount = () => {
                     {errors.email?.message && (
                         <FormError errorMessage={errors.email?.message} />
                     )}
-                    {errors.email?.type === "pattern" && (
-                        <FormError errorMessage={"Please enter a valid email"} />
-                    )}
+
                     <input
                         {...register("password", {
                             required: "Password is required",
