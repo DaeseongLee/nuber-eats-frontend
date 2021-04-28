@@ -10,7 +10,7 @@ import { Helmet } from "react-helmet-async";
 import { authTokenVar, isLoggedInVar } from "../apollo";
 import { LOCALSTORAGE_TOKEN } from "../constant";
 
-const LOGIN_MUTATION = gql`
+export const LOGIN_MUTATION = gql`
     mutation loginMutation($loginInput: LoginInput!) {
         login(input: $loginInput){
             ok
@@ -34,6 +34,7 @@ export const Login = () => {
         const {
             login: { ok, token },
         } = data;
+
         if (ok && token) {
             localStorage.setItem(LOCALSTORAGE_TOKEN, token);
             authTokenVar(token);
@@ -99,9 +100,6 @@ export const Login = () => {
                     />
                     {errors.password?.message && (
                         <FormError errorMessage={errors.password?.message} />
-                    )}
-                    {errors.password?.type === "minLength" && (
-                        <FormError errorMessage='Passwrod must be more than 10 chars' />
                     )}
                     <Button
                         canClick={formState.isValid}
