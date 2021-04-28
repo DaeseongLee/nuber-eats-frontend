@@ -37,7 +37,7 @@ export const RestaurantDetail = () => {
             <Helmet>
                 <title>{data?.restaurant?.restaurant?.name || ""}</title>
             </Helmet>
-            <div className="bg-gray-800 bg-center bg-cover py-40"
+            <div className="bg-gray-800 bg-center bg-cover py-48"
                 style={{
                     backgroundImage: `url(${data?.restaurant.restaurant?.coverImg})`
                 }}>
