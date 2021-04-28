@@ -4,7 +4,8 @@ import { Header } from '../components/header';
 import { useMe } from '../hooks/useMe';
 import { NotFound } from '../pages/404';
 import { Category } from '../pages/client/category';
-import Restaurants from '../pages/client/restaurants';
+import { RestaurantDetail } from '../pages/client/restaurantDetail';
+import { Restaurants } from '../pages/client/restaurants';
 import { Search } from '../pages/client/search';
 import { ConfirmEmail } from '../pages/user/confirm-email';
 import { EditProfile } from '../pages/user/edit-profile';
@@ -24,7 +25,11 @@ const ClientRoutes = [
     </Route>,
     <Route key={5} path="/category/:slug" >
         < Category />
+    </Route>,
+    <Route key={6} path="/restaurant/:id" >
+        < RestaurantDetail />
     </Route>
+
 
 ]
 

@@ -1,9 +1,10 @@
-import { gql, useQuery } from '@apollo/client';
+import { gql, makeVar, useQuery } from '@apollo/client';
 import React, { useCallback, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
+import { CategoryItem } from '../../components/categoryItem';
 import { Restaurant } from '../../components/restaurant';
 import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from '../../fragments';
 import { restaurantsPageQuery, restaurantsPageQueryVariables } from '../../__generated__/restaurantsPageQuery';
@@ -30,11 +31,11 @@ const RESTAURANT_QUERY = gql`
     ${RESTAURANT_FRAGMENT}
     ${CATEGORY_FRAGMENT}
 `
-interface IFormProps {
+export interface IFormProps {
     searchTerm: string;
 }
 
-const Restaurants = () => {
+export const Restaurants = () => {
     const [page, setPage] = useState(1);
     const { data, loading } = useQuery<restaurantsPageQuery, restaurantsPageQueryVariables>(RESTAURANT_QUERY, {
         variables: {
@@ -43,8 +44,12 @@ const Restaurants = () => {
             },
         },
     });
-    const onNextPageClick = useCallback(() => setPage(current => current + 1), []);
-    const onPrevPageClick = useCallback(() => setPage(current => current - 1), []);
+    const onNextPageClick = useCallback(() => {
+        setPage(current => current + 1);
+    }, []);
+    const onPrevPageClick = useCallback(() => {
+        setPage(current => current - 1)
+    }, []);
 
     const { register, getValues, handleSubmit } = useForm<IFormProps>();
     const history = useHistory();
@@ -55,6 +60,8 @@ const Restaurants = () => {
             search: `?term=${searchTerm}`,
         })
     }
+
+
     return (
         <div>
             <Helmet>
@@ -74,13 +81,7 @@ const Restaurants = () => {
                     <div className="flex justify-around max-w-sm mx-auto">
                         {data?.allCategories.categories?.map(category => (
                             <Link key={category.id} to={`/category/${category.slug}`} >
-                                <div className="flex flex-col group items-center cursor-pointer" >
-                                    <div className="w-16 h-16 bg-cover group-hover:bg-gray-100 rounded-full"
-                                        style={{ backgroundImage: `url(${category.coverImg})` }}></div>
-                                    <span className="mt-1 text-sm text-center font-medium">
-                                        {category.name}
-                                    </span>
-                                </div>
+                                <CategoryItem name={category.name} coverImg={category.coverImg} />
                             </Link>
                         ))}
                     </div>
@@ -122,4 +123,3 @@ const Restaurants = () => {
     )
 };
 
-export default Restaurants;

@@ -22,22 +22,24 @@ const authLink = setContext((_, { headers }) => {
 
 export const client = new ApolloClient({
     link: authLink.concat(httpLink),
-    cache: new InMemoryCache({
-        typePolicies: {
-            Query: {
-                fields: {
-                    isLoggedIn: {
-                        read() {
-                            return isLoggedInVar();
-                        }
-                    },
-                    authTokenVar: {
-                        read() {
-                            return authTokenVar();
-                        }
-                    }
-                }
-            }
-        }
-    })
+    cache: new InMemoryCache(
+        // {
+        // typePolicies: {
+        //     Query: {
+        //         fields: {
+        //             isLoggedIn: {
+        //                 read() {
+        //                     return isLoggedInVar();
+        //                 }
+        //             },
+        //             authTokenVar: {
+        //                 read() {
+        //                     return authTokenVar();
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+        // }
+    )
 });
