@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Redirect, Switch, Route } from 'react-router-dom';
 import { Header } from '../components/header';
 import { useMe } from '../hooks/useMe';
-import { NotFound } from '../pages/404';
+import { NotFound } from '../components/404';
 import { Category } from '../pages/client/category';
 import { RestaurantDetail } from '../pages/client/restaurantDetail';
 import { Restaurants } from '../pages/client/restaurants';
