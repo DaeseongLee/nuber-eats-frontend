@@ -67,5 +67,8 @@
       "./src/pages/**/*.tsx",
       "./src/routers/**/*.tsx"
     ]
+  },
+  "devDependencies": {
+    "@testing-library/cypress": "^7.0.6"
   }
 }
