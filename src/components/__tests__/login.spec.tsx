@@ -1,11 +1,10 @@
 import { createMockClient, MockApolloClient } from "mock-apollo-client";
-import { render, RenderResult, waitFor } from "@testing-library/react";
 import React from "react";
-import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter as Router } from 'react-router-dom';
 import { ApolloProvider } from "@apollo/client";
 import { Login, LOGIN_MUTATION } from "../../pages/login";
 import userEvent from "@testing-library/user-event";
+import { render, RenderResult, waitFor } from "../../test-utils";
+
 describe("<Login/>", () => {
     let renderResult: RenderResult;
     let mockedClient: MockApolloClient;
@@ -13,13 +12,9 @@ describe("<Login/>", () => {
         await waitFor(async () => {
             mockedClient = createMockClient();
             renderResult = render(
-                <HelmetProvider>
-                    <Router>
-                        <ApolloProvider client={mockedClient}>
-                            <Login />
-                        </ApolloProvider>
-                    </Router>
-                </HelmetProvider>
+                <ApolloProvider client={mockedClient}>
+                    <Login />
+                </ApolloProvider>
             );
         });
 
@@ -46,7 +41,7 @@ describe("<Login/>", () => {
     });
 
     it("display password required errors", async () => {
-        const { getByPlaceholderText, debug, getByRole } = renderResult;
+        const { getByPlaceholderText, getByRole } = renderResult;
         const email = getByPlaceholderText(/email/i);
         const submitBtn = getByRole("button");
         await waitFor(() => {

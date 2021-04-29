@@ -9,7 +9,7 @@ import { Helmet } from "react-helmet-async";
 import { createAccountMutation, createAccountMutationVariables } from "../__generated__/createAccountMutation";
 import { UserRole } from "../__generated__/globalTypes";
 
-const CREATE_ACCOUNT_MUTATION = gql`
+export const CREATE_ACCOUNT_MUTATION = gql`
     mutation createAccountMutation($createAccountInput: CreateAccountInput!) {
         createAccount(input: $createAccountInput){
             ok
@@ -83,7 +83,9 @@ export const CreateAccount = () => {
                     {errors.email?.message && (
                         <FormError errorMessage={errors.email?.message} />
                     )}
-
+                    {errors.email?.type === "pattern" && (
+                        <FormError errorMessage={"Please enter a valid email"} />
+                    )}
                     <input
                         {...register("password", {
                             required: "Password is required",
@@ -96,9 +98,6 @@ export const CreateAccount = () => {
                     />
                     {errors.password?.message && (
                         <FormError errorMessage={errors.password?.message} />
-                    )}
-                    {errors.password?.type === "minLength" && (
-                        <FormError errorMessage='Passwrod must be more than 10 chars' />
                     )}
                     <select
                         {...register("role", {
