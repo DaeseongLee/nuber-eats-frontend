@@ -11,6 +11,7 @@ import { ConfirmEmail } from '../pages/user/confirm-email';
 import { EditProfile } from '../pages/user/edit-profile';
 import { MyRestaurants } from '../pages/owner/my-restaurants';
 import { AddRestaurant } from '../pages/owner/add-restaurants';
+import { MyRestaurant } from '../pages/owner/my-restaurant';
 
 const commontRoutes = [
     { path: "/confirm", component: <ConfirmEmail />, },
@@ -27,6 +28,7 @@ const clientRoutes = [
 const ownerRouted = [
     { path: "/", component: <MyRestaurants /> },
     { path: "/add-restaurant", component: <AddRestaurant /> },
+    { path: "/restaurant/:id", component: <MyRestaurant /> },
 ]
 
 export const LoggedInRouter = () => {
