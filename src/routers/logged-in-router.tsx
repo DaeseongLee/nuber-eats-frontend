@@ -12,6 +12,7 @@ import { EditProfile } from '../pages/user/edit-profile';
 import { MyRestaurants } from '../pages/owner/my-restaurants';
 import { AddRestaurant } from '../pages/owner/add-restaurants';
 import { MyRestaurant } from '../pages/owner/my-restaurant';
+import { AddDish } from '../pages/owner/add-dish';
 
 const commontRoutes = [
     { path: "/confirm", component: <ConfirmEmail />, },
@@ -29,6 +30,7 @@ const ownerRouted = [
     { path: "/", component: <MyRestaurants /> },
     { path: "/add-restaurant", component: <AddRestaurant /> },
     { path: "/restaurant/:id", component: <MyRestaurant /> },
+    { path: "/restaurant/:restaurantId/add-dish", component: <AddDish /> },
 ]
 
 export const LoggedInRouter = () => {
