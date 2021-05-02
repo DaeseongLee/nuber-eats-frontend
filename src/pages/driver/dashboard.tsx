@@ -1,5 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import GoogleMapReact from 'google-map-react';
+import { gql, useMutation, useSubscription } from '@apollo/client';
+import { FULL_ORDER_FRAGMENT } from '../../fragments';
+import { cookedOrders } from '../../__generated__/cookedOrders';
+import { Link, useHistory } from 'react-router-dom';
+import { takeOrder, takeOrderVariables } from '../../__generated__/takeOrder';
+
+const COOKED_ORDERS_SUBSCRIPTION = gql`
+    subscription cookedOrders {
+        cookedOrders {
+            ...FullOrderParts
+        }
+    }
+    ${FULL_ORDER_FRAGMENT}
+`;
+
+const TAKE_ORDER_MUTATION = gql`
+  mutation takeOrder($input: TakeOrderInput!) {
+    takeOrder(input: $input) {
+      ok
+      error
+    }
+  }
+`;
 
 interface ICoords {
     lat: number;
@@ -11,7 +34,9 @@ interface IDriverProps {
     lng: number;
     $hover?: any;
 }
-const Driver: React.FC<IDriverProps> = () => <div className="text-lg">🚖</div>
+const Driver: React.FC<IDriverProps> = () => {
+    return (<div className="text-lg">🚖</div>)
+}
 
 export const Dashboard = () => {
     const [driverCoords, setDriverCoords] = useState<ICoords>({ lng: 0, lat: 0 });
@@ -53,12 +78,16 @@ export const Dashboard = () => {
         setMaps(maps);
     };
 
-    const onGetRouteClick = () => {
+    const makeRoute = () => {
         if (map) {
             const directionsService = new google.maps.DirectionsService();
-            const directionsRender = new google.maps.DirectionsRenderer();
-            console.log('directionsService', directionsService);
-            console.log('directionsRender', directionsRender);
+            const directionsRender = new google.maps.DirectionsRenderer({
+                polylineOptions: {
+                    strokeColor: "#000",
+                    strokeOpacity: 1,
+                    strokeWeight: 5,
+                },
+            });
 
             directionsRender.setMap(map);
             directionsService.route(
@@ -82,14 +111,47 @@ export const Dashboard = () => {
                 })
 
         }
-    }
+    };
+    const { data: cookedOrdersData } = useSubscription<cookedOrders>(
+        COOKED_ORDERS_SUBSCRIPTION
+    );
+    useEffect(() => {
+        if (cookedOrdersData?.cookedOrders.id) {
+            console.log("cookedOrdersData", cookedOrdersData);
+            makeRoute();
+        }
+    }, [cookedOrdersData]);
+
+    const history = useHistory();
+    const onCompleted = (data: takeOrder) => {
+        if (data.takeOrder.ok) {
+            history.push(`/orders/${cookedOrdersData?.cookedOrders.id}`);
+        }
+    };
+    const [takeOrderMutation] = useMutation<takeOrder, takeOrderVariables>(
+        TAKE_ORDER_MUTATION,
+        {
+            onCompleted,
+        }
+    );
+    const triggerMutation = (orderId: number) => {
+        takeOrderMutation({
+            variables: {
+                input: {
+                    id: orderId,
+                },
+            },
+        });
+    };
+
+
     return (
         <div>
             <div className="overflow-hidden"
                 style={{ width: window.innerWidth, height: "50vh" }}
             >
                 <GoogleMapReact
-                    defaultZoom={16}
+                    defaultZoom={13}
                     draggable={true}
                     onGoogleApiLoaded={onApiLoaded}
                     defaultCenter={{
@@ -98,10 +160,33 @@ export const Dashboard = () => {
                     }}
                     bootstrapURLKeys={{ key: "AIzaSyDkRvqqO0XomHAIZyeJcb5NX9W8sZWQ-KE" }}
                 >
-                    <Driver lat={driverCoords.lat} lng={driverCoords.lng} />
+                    {/* <Driver lat={driverCoords.lat} lng={driverCoords.lng} />
+                    <Driver lat={driverCoords.lat + 0.01} lng={driverCoords.lng + 0.01} /> */}
                 </GoogleMapReact>
             </div>
-            <button onClick={onGetRouteClick}>Get route</button>
+            <div className=" max-w-screen-sm mx-auto bg-white relative -top-10 shadow-lg py-8 px-5">
+                {cookedOrdersData?.cookedOrders.restaurant ? (
+                    <>
+                        <h1 className="text-center  text-3xl font-medium">
+                            New Coocked Order
+                        </h1>
+                        <h1 className="text-center my-3 text-2xl font-medium">
+                            Pick it up soon @{" "}
+                            {cookedOrdersData?.cookedOrders.restaurant?.name}
+                        </h1>
+                        <button
+                            onClick={() =>
+                                triggerMutation(cookedOrdersData?.cookedOrders.id)
+                            }>
+                            Accept Challenge &rarr;
+                        </button>
+                    </>
+                ) : (
+                    <h1 className="text-center  text-3xl font-medium">
+                        No orders yet...
+                    </h1>
+                )}
+            </div>
         </div>
     )
 }
