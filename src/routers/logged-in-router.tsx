@@ -14,6 +14,8 @@ import { AddRestaurant } from '../pages/owner/add-restaurants';
 import { MyRestaurant } from '../pages/owner/my-restaurant';
 import { AddDish } from '../pages/owner/add-dish';
 import { Order } from '../pages/order';
+import { Dashboard } from '../pages/driver/dashboard';
+import { UserRole } from '../__generated__/globalTypes';
 
 const commontRoutes = [
     { path: "/confirm", component: <ConfirmEmail />, },
@@ -28,11 +30,15 @@ const clientRoutes = [
     { path: "/restaurant/:id", component: <RestaurantDetail />, },
 ];
 
-const ownerRouted = [
+const ownerRoutes = [
     { path: "/", component: <MyRestaurants /> },
     { path: "/add-restaurant", component: <AddRestaurant /> },
     { path: "/restaurant/:id", component: <MyRestaurant /> },
     { path: "/restaurant/:restaurantId/add-dish", component: <AddDish /> },
+]
+
+const driverRoutes = [
+    { path: "/", component: <Dashboard /> },
 ]
 
 export const LoggedInRouter = () => {
@@ -48,7 +54,7 @@ export const LoggedInRouter = () => {
         <Router>
             <Header />
             <Switch>
-                {data.me.role === "Client" &&
+                {data.me.role === UserRole.Client &&
                     clientRoutes.map(route => {
                         console.log(route);
                         return (
@@ -57,8 +63,14 @@ export const LoggedInRouter = () => {
                             </Route>
                         )
                     })}
-                {data.me.role === "Owner" &&
-                    ownerRouted.map(route => (
+                {data.me.role === UserRole.Owner &&
+                    ownerRoutes.map(route => (
+                        <Route exact key={route.path} path={route.path}>
+                            {route.component}
+                        </Route>
+                    ))}
+                {data.me.role === UserRole.Delivery &&
+                    driverRoutes.map(route => (
                         <Route exact key={route.path} path={route.path}>
                             {route.component}
                         </Route>
